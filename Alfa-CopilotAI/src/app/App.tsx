@@ -2,6 +2,7 @@ function App() {
 
   return (
    <>
+     <h1>Welcome to Alfa-CopilotAI</h1>
    </>
   )
 }
