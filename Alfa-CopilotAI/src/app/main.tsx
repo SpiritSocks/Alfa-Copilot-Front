@@ -8,6 +8,15 @@ import NotFoundPage from '../pages/notFound/NotFoundPage';
 
 import './index.css'
 
+import AuthProvider from 'react-auth-kit'
+import createAuthStore from 'react-auth-kit/store/createAuthStore';
+
+const store = createAuthStore('cookie', {
+  authName: '_auth',
+  cookieDomain: window.location.hostname,
+  cookieSecure: true,
+});
+
 const router = createBrowserRouter([
   {path: '/', element: <App />},
   {path: '/login', element: <LoginPage />},
@@ -16,6 +25,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider store={store}>
+      <RouterProvider router={router}/>
+    </AuthProvider>
   </StrictMode>,
 )
