@@ -1,10 +1,53 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
+import useFetch from "../../hooks/useFetch";
+
+import type { UserInfo } from "../../lib/types";
 
 const LoginPage = () => {
+
+  const API_BASE = "https://maxbot-withoutdocker.onrender.com";
+
+  const signIn = useSignIn();
+  const navigate = useNavigate();
+
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { fetching: fetchUserInfo, isPending: isUserInfoPending } = useFetch(async () => {
+    const response = await fetch(`${API_BASE}/user/info`);
+
+    if (!response.ok) throw new Error("Invalid credentials");
+
+    const data: UserInfo = await response.json();
+    setUserInfo(data);
+
+    const success = signIn({
+      auth: {
+        token: `${email}:${password}`,
+        type: "Basic",
+      },
+      userState: {
+        email: data.email,
+      },
+    });
+
+    if (success) {
+      navigate("/");
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // prevents page reload
+    fetchUserInfo();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-[#ffffff]">
       <div className="w-full max-w-6xl grid grid-cols-2 gap-12 items-end">
-        
+
         <section className="space-y-8">
           <div className="space-y-3">
             <div className="inline-block bg-[#ef3124] px-4 py-2 rounded-md">
@@ -84,12 +127,12 @@ const LoginPage = () => {
             </div>
 
             <Link to="/">
-            <button
-              type="submit"
-              className="w-full py-3 rounded-xl bg-[#ef3124] text-white"
-            >
-              Войти в Alfa Copilot
-            </button>
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-[#ef3124] text-white"
+              >
+                Войти в Alfa Copilot
+              </button>
             </Link>
 
             <p className="text-center text-sm text-gray-500">
