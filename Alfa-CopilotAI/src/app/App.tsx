@@ -1,3 +1,6 @@
+import ChatPage from "../pages/ChatPage/ChatPage.tsx";
+
+
 function App() {
 
   return (
